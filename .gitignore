@@ -1,2 +1,4 @@
 services.json
+service_declarations/**/*
+service_home/**/*
 node_modules/**/*

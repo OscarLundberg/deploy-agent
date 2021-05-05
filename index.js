@@ -87,13 +87,24 @@ app.post('/deploy-agent/post/kill', (req, res) => {
 
 })
 
+app.post('/deploy-agent/post/start', (req, res) => {
+    start();
+    res.send(200)
+})
+
 
 
 app.listen(49494, () => {
     console.log("server listening on localhost:49494");
 })
 
-
+function start() {
+    let serviceList = readToObject("services.json");
+    serviceList.forEach(service => {
+        fs.mkdirSync("./service_declarations");
+        fs.mkdirSync("./service_home");
+    })
+}
 
 function readToObject(file) {
     if (fs.existsSync(file)) {

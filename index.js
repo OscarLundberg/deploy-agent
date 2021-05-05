@@ -1,8 +1,10 @@
 var fs = require('fs')
+const path = require('path');
 var express = require('express');
 var os = require('os');
 const { json } = require('express');
 const crypto = require('crypto');
+const { exec, execSync } = require('child_process');
 var app = express();
 
 function sha1(inp) {
@@ -13,9 +15,13 @@ function sha1(inp) {
 function userAgent() {
     return {
         "hostname": os.hostname(),
-        "homeDirectory": os.homedir(),
+        "os": os.type(),
         "freeMemory": Math.floor((os.freemem() / 1024) / 1024) + " mb",
-        "uptime": Math.floor((os.uptime() / 60) / 60) + " h"
+        "uptime": Math.floor((os.uptime() / 60) / 60) + " h",
+        "serviceDir": (os.type() === "Darwin") ?
+            path.resolve(__dirname + "/service_declarations") :
+            path.resolve("/etc/systemd/system"),
+        ...os.userInfo()
     }
 }
 
@@ -29,7 +35,7 @@ app.get('/deploy-agent/get/info', (req, res) => {
 })
 
 app.get('/deploy-agent/get/status', (req, res) => {
-
+    res.status(200).send(getStatus());
 })
 
 app.get('/deploy-agent/get/help', (req, res) => {
@@ -61,7 +67,7 @@ app.post('/deploy-agent/post/update', (req, res) => {
 
 app.post('/deploy-agent/post/deploy', (req, res) => {
     try {
-        let services = JSON.parse(readToObject("./services.json").toString());
+        let services = readToObject("./services.json");
         console.log(services);
         let input = req.body;
         let validation = validate(input, services);
@@ -80,16 +86,17 @@ app.post('/deploy-agent/post/deploy', (req, res) => {
 });
 
 app.post('/deploy-agent/post/reload', (req, res) => {
-
+    res.status(200).send(runService(req.body.name))
 })
 
 app.post('/deploy-agent/post/kill', (req, res) => {
-
+    res.status(200).send(runService(req.body.name))
 })
 
 app.post('/deploy-agent/post/start', (req, res) => {
-    start();
-    res.send(200)
+    let inp = req.body.name;
+    start(inp);
+    res.status("200").send("OK")
 })
 
 
@@ -98,18 +105,17 @@ app.listen(49494, () => {
     console.log("server listening on localhost:49494");
 })
 
-function start() {
-    let serviceList = readToObject("services.json");
+function start(re = /.*/g) {
+    let serviceList = readToObject("services.json").filter(e => e.name.match(re));
     serviceList.forEach(service => {
-        fs.mkdirSync("./service_declarations");
-        fs.mkdirSync("./service_home");
+        makeService(service);
     })
 }
 
 function readToObject(file) {
     if (fs.existsSync(file)) {
 
-        return (fs.readFileSync(file))
+        return JSON.parse(fs.readFileSync(file).toString())
     } else {
         fs.writeFileSync(file, "[]")
         return readToObject(file);
@@ -147,3 +153,71 @@ function validate(inp, services) {
     return { success, error: "", code: 0 }
 }
 
+function makeService(service) {
+    let homeDir = path.resolve(__dirname + "/service_home/" + service.name);
+    let declaration = path.resolve(userAgent().serviceDir + "/");
+    try {
+        fs.mkdirSync(homeDir, { "recursive": true });
+        fs.mkdirSync(declaration, { "recursive": true });
+    } catch { }
+
+    console.log(service);
+    let parsedCommand = service.cmd.replace("$CWD", homeDir);
+
+    let clone = [`cd $CWD; git clone ${service.from} .`]
+    let before = (Array.isArray(service.before) ? service.before : clone);
+
+
+    before.map(e => e.replace("$CWD", homeDir))
+        .forEach(cmd => {
+            console.log(`Executing ${cmd}`);
+            execSync(cmd);
+        })
+
+    let template =
+        `[Unit]
+Description=${service.name}
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=${service.restart || "always"}
+RestartSec=1
+User=${userAgent().username}
+ExecStart=${parsedCommand}
+
+[Install]
+WantedBy=multi-user.target`
+
+    fs.writeFileSync(declaration + "/" + service.name + ".service", template);
+    [`systemctl daemon-reload`, `systemctl enable ${service.name}.service`].forEach(cmd => {
+        execSync(cmd);
+    })
+}
+
+
+function getStatus(nm = "__ALL__SERVICES__") {
+    let services = [];
+    if (nm == "__ALL__SERVICES__") {
+        for (let service of readToObject("services.json")) {
+            services += status(service);
+        }
+    } else {
+        return execSync(`systemctl status ${nm}.service`).toString()
+    }
+    return services;
+}
+
+function runService(nm) {
+    return execSync(`systemctl start ${nm}.service`).toString()
+}
+
+function stopService(nm) {
+    return execSync(`systemctl stop ${nm}.service`).toString()
+}
+
+
+function logs(nm) {
+    return execSync(`journalctl -u ${nm}.service`).toString()
+}

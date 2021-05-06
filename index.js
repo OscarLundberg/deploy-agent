@@ -25,6 +25,9 @@ function userAgent() {
     }
 }
 
+services = () => readToObject('services.json');
+
+
 
 app.get('/deploy-agent/get/online', (req, res) => {
     res.status(200).send("Online");
@@ -55,6 +58,9 @@ app.get('/deploy-agent/get/help', (req, res) => {
             <li>/deploy-agent/post/reload - <small>Force a running service to reload (auto updates if specified in the run behaviour)</small></li>
             <li>/deploy-agent/post/kill - <small>Kill a running service</small></li>
         </ul>
+        <h3>DELETE</h3>
+        <ul><li>'/deploy-agent/delete/service' - <small>Delete the service* (<b>Alpha</b>: The service declaration and home directory will be kept as a backup, but the service will be unlinked and moved)</small></li>
+        </ul>
         `
     );
 })
@@ -62,17 +68,26 @@ app.get('/deploy-agent/get/help', (req, res) => {
 app.use(express.json())
 
 app.post('/deploy-agent/post/update', (req, res) => {
-
+    let serviceList = services();
+    let input = req.body;
+    let name = req.body.name;
+    let target = serviceList.filter(e => e.name == name);
+    if (target.length <= 0) {
+        res.status(400).send("Service not found");
+    } else {
+        let index = serviceList.indexOf(target[0]);
+        serviceList[index] = { ...target[0], ...input };
+        writeToFile('services.json', serviceList);
+    }
 })
 
 app.post('/deploy-agent/post/deploy', (req, res) => {
     try {
-        let services = readToObject("./services.json");
-        console.log(services);
         let input = req.body;
-        let validation = validate(input, services);
+        let serviceList = services();
+        let validation = validate(input, serviceList);
         if (validation.success) {
-            let list = [...services, req.body];
+            let list = [...serviceList, req.body];
             writeToFile('./services.json', list);
             res.status(200).send("OK");
         } else {
@@ -98,6 +113,16 @@ app.post('/deploy-agent/post/start', (req, res) => {
     start(inp);
     res.status("200").send("OK")
 })
+
+app.delete('/deploy-agent/delete/service', (req, res) => {
+    let inp = req.body.name;
+    let result = removeService(inp);
+    if (result.success) {
+        res.status(200).send("OK");
+    } else {
+        res.status(400).send(result.error);
+    }
+});
 
 
 
@@ -161,7 +186,6 @@ function makeService(service) {
         fs.mkdirSync(declaration, { "recursive": true });
     } catch { }
 
-    console.log(service);
     let parsedCommand = service.cmd.replace("$CWD", homeDir);
 
     let clone = [`cd $CWD; git clone ${service.from} .`]
@@ -196,12 +220,35 @@ WantedBy=multi-user.target`
     })
 }
 
+function removeService(nm) {
+
+    let serviceList = services();
+
+
+    let declaration = path.resolve(userAgent().serviceDir + "/" + nm + ".service");
+    if (fs.existsSync(declaration)) {
+        stopService(nm);
+        try {
+
+            serviceList = services().filter(e => e.name == nm);
+            writeToFile('services.json', serviceList);
+
+            fs.copyFileSync(declaration, path.resolve(__dirname + "/service_declarations/" + nm + "_backup_" + new Date().toLocaleDateString()));
+            fs.rmSync(declaration);
+            return { success: true, error: "" }
+        } catch (err) {
+            return { success: false, error: err };
+        }
+    }
+    return { success: false, error: "Service not found" };
+}
+
 
 function getStatus(nm = "__ALL__SERVICES__") {
-    let services = [];
+    let serviceList = [];
     if (nm == "__ALL__SERVICES__") {
-        for (let service of readToObject("services.json")) {
-            services += status(service);
+        for (let service of services()) {
+            serviceList += status(service);
         }
     } else {
         return execSync(`systemctl status ${nm}.service`).toString()

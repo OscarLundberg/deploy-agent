@@ -69,7 +69,8 @@ app.get('/deploy-agent/get/help', (req, res) => {
             "from": "https://github.com/OscarLundberg/deploy-agent.git", : Link to git repo - <b>*</b>
             "cmd": "cd $CWD; npm run start",                             : Command to execute in order to run service - <b>* $</b>
             "name": "dirTest",                                           : Name/Label for the service (Should be URL-safe) - <b>*</b>
-            "before": [""]                                               : Commands to run before deploying.    Default: ["git clone $FROM"] - <b>$</b>
+            "before": [""],                                              : Commands to run before deploying.    Default: ["git clone $FROM"] - <b>$</b>
+            "upgrade": "",                                               : Command to run when upgrading. - <b>$</b>
             "runMode": "service",                                        : Run mode for the service.            Default: "service"
             "restart": "always"                                          : Restart mode for the service.        Default: "restart"
             "to": "myself"                                               : Alias for current deploy-agent

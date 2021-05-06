@@ -20,7 +20,7 @@
 
 #### Structure
 
-```json
+```
 {
     "from": "https://github.com/OscarLundberg/deploy-agent.git", // Link to git repo - *
     "cmd": "cd $CWD; npm run start",                             // Command to execute in order to run service - * $
@@ -40,7 +40,7 @@
 
 
 ```php
-$CWD     : service home directory
+$CWD     :   service home directory
 $NAME    :   service name
 $FROM    :   service repository url
 ```

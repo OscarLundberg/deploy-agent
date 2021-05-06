@@ -6,6 +6,7 @@ const { json } = require('express');
 const crypto = require('crypto');
 const { exec, execSync } = require('child_process');
 var app = express();
+var md = require('markdown-it')();
 
 function sha1(inp) {
     return crypto.createHmac("sha1", JSON.stringify(inp))
@@ -41,53 +42,19 @@ app.get('/deploy-agent/get/status', (req, res) => {
     res.status(200).send(getStatus());
 })
 
-app.get('/deploy-agent/get/help', (req, res) => {
-    res.send(
-        `
-        <h3>GET</h3>
-        <ul>
-            <li>/deploy-agent/get/online - <small>Is agent running</small><a href="#structure">Structure</a></li>
-            <li>/deploy-agent/get/info - <small>Information about the machine running this agent</small></li>
-            <li>/deploy-agent/get/status - <small>Status of services running under this agent</small></li>
-            <li>/deploy-agent/get/help - <small>Display this help page</small></li>
-        </ul>
-        <h3>POST</h3>
-        <ul>
-            <li>/deploy-agent/post/deploy - <small>Deploy a new service</small></li>
-            <li>/deploy-agent/post/update - <small>Update an existing service</small></li>
-            <li>/deploy-agent/post/reload - <small>Force a running service to reload</small></li>
-            <li>/deploy-agent/post/kill - <small>Kill a running service</small></li>
-            <li>/deploy-agent/post/upgrade - <small>Upgrade the service (Requires "upgrade" property to be specified either in service declaration or in request body)</small></li>
-        </ul>
-        <h3>DELETE</h3>
-        <ul><li>'/deploy-agent/delete/service' - <small>Delete the service* (<b>Alpha</b>: The service declaration and home directory will be kept as a backup, but the service will be unlinked and moved)</small></li>
-        </ul>
-        <h4 id="structure">Structure</h4>
-        <code>
-        <pre>
-        {
-            "from": "https://github.com/OscarLundberg/deploy-agent.git", : Link to git repo - <b>*</b>
-            "cmd": "cd $CWD; npm run start",                             : Command to execute in order to run service - <b>* $</b>
-            "name": "dirTest",                                           : Name/Label for the service (Should be URL-safe) - <b>*</b>
-            "before": [""],                                              : Commands to run before deploying.    Default: ["git clone $FROM"] - <b>$</b>
-            "upgrade": "",                                               : Command to run when upgrading. - <b>$</b>
-            "runMode": "service",                                        : Run mode for the service.            Default: "service"
-            "restart": "always"                                          : Restart mode for the service.        Default: "restart"
-            "to": "myself"                                               : Alias for current deploy-agent
+app.get('/deploy-agent/get/help', async (req, res) => {
+    let content = fs.readFileSync('./readme.md').toString()
+    res.send(`
+    <html>
+        <head><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+        <style>
+        .markdown-body {
+            width:90%;
+            margin: 0px auto;
         }
-        </pre></code>
-        <div>* - Required</div>
-        <div>$ - Exposes variables.
-        <code>
-        <pre>
-        $CWD     :   service home directory
-        $NAME    :   service name
-        $FROM    :   service repository url
-        </pre>
-        </code>
-        </div>
-        `
-    );
+        </style>
+        </head>
+        <body><div class="markdown-body">` + md.render(content) + "</div></body>");
 })
 
 app.use(express.json())
@@ -294,7 +261,7 @@ function getStatus(nm = "__ALL__SERVICES__") {
     let serviceList = [];
     if (nm == "__ALL__SERVICES__") {
         for (let service of services()) {
-            serviceList += status(service);
+            serviceList += getStatus(service.name);
         }
     } else {
         return execSync(`systemctl status ${nm}.service`).toString()

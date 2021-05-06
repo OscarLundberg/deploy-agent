@@ -64,22 +64,25 @@ app.get('/deploy-agent/get/help', (req, res) => {
         </ul>
         <h4 id="structure">Structure</h4>
         <code>
+        <pre>
         {
-            "from": "https://github.com/OscarLundberg/deploy-agent.git",    // Link to git repo - *
-            "cmd": "cd $CWD; npm run start",                                // Command to execute in order to run service - * $
-            "name": "dirTest",                                              // Name/Label for the service (Should be URL-safe) - *
-            "before": [""]                                                  // Array of commands to run before first execution - $(Defaults to ["git clone $FROM"])
-            "to": "myself",                                                 // Alias for current deploy-agent (Optional)
-            "runMode": "service",                                           // Run mode for the service (Optional)
-            "restart": "always"                                             // Restart mode for the service (Optional)
+            "from": "https://github.com/OscarLundberg/deploy-agent.git", : Link to git repo - <b>*</b>
+            "cmd": "cd $CWD; npm run start",                             : Command to execute in order to run service - <b>* $</b>
+            "name": "dirTest",                                           : Name/Label for the service (Should be URL-safe) - <b>*</b>
+            "before": [""]                                               : Commands to run before deploying.    Default: ["git clone $FROM"] - <b>$</b>
+            "runMode": "service",                                        : Run mode for the service.            Default: "service"
+            "restart": "always"                                          : Restart mode for the service.        Default: "restart"
+            "to": "myself"                                               : Alias for current deploy-agent
         }
-        </code>
-        <div>* - required</div>
+        </pre></code>
+        <div>* - Required</div>
         <div>$ - Exposes variables.
         <code>
+        <pre>
         $CWD     :   service home directory
         $NAME    :   service name
         $FROM    :   service repository url
+        </pre>
         </code>
         </div>
         `

@@ -46,7 +46,7 @@ app.get('/deploy-agent/get/help', (req, res) => {
         `
         <h3>GET</h3>
         <ul>
-            <li>/deploy-agent/get/online - <small>Is agent running</small></li>
+            <li>/deploy-agent/get/online - <small>Is agent running</small><a href="#structure">Structure</a></li>
             <li>/deploy-agent/get/info - <small>Information about the machine running this agent</small></li>
             <li>/deploy-agent/get/status - <small>Status of services running under this agent</small></li>
             <li>/deploy-agent/get/help - <small>Display this help page</small></li>
@@ -62,6 +62,26 @@ app.get('/deploy-agent/get/help', (req, res) => {
         <h3>DELETE</h3>
         <ul><li>'/deploy-agent/delete/service' - <small>Delete the service* (<b>Alpha</b>: The service declaration and home directory will be kept as a backup, but the service will be unlinked and moved)</small></li>
         </ul>
+        <h4 id="structure">Structure</h4>
+        <code>
+        {
+            "from": "https://github.com/OscarLundberg/deploy-agent.git",    // Link to git repo - *
+            "cmd": "cd $CWD; npm run start",                                // Command to execute in order to run service - * $
+            "name": "dirTest",                                              // Name/Label for the service (Should be URL-safe) - *
+            "before": [""]                                                  // Array of commands to run before first execution - $(Defaults to ["git clone $FROM"])
+            "to": "myself",                                                 // Alias for current deploy-agent (Optional)
+            "runMode": "service",                                           // Run mode for the service (Optional)
+            "restart": "always"                                             // Restart mode for the service (Optional)
+        }
+        </code>
+        <div>* - required</div>
+        <div>$ - Exposes variables.
+        <code>
+        $CWD     :   service home directory
+        $NAME    :   service name
+        $FROM    :   service repository url
+        </code>
+        </div>
         `
     );
 })
@@ -94,7 +114,7 @@ app.post('/deploy-agent/post/upgrade', (req, res) => {
 
         try {
             let command = req.body.upgrade || target.upgrade;
-            output = execSync(command.replace("$CWD", homeDir));
+            output = execSync(replaceWildcards(command, homeDir, target));
         } catch (err) {
             res.status(400).send(err);
         }
@@ -208,13 +228,13 @@ function makeService(service) {
         fs.mkdirSync(declaration, { "recursive": true });
     } catch { }
 
-    let parsedCommand = service.cmd.replace("$CWD", homeDir);
+    let parsedCommand = replaceWildcards(service.cmd, homeDir, service);
 
     let clone = [`cd $CWD; git clone ${service.from} .`]
     let before = (Array.isArray(service.before) ? service.before : clone);
 
 
-    before.map(e => e.replace("$CWD", homeDir))
+    before.map(e => replaceWildcards(e, homeDir, service))
         .forEach(cmd => {
             console.log(`Executing ${cmd}`);
             execSync(cmd);
@@ -289,4 +309,8 @@ function stopService(nm) {
 
 function logs(nm) {
     return execSync(`journalctl -u ${nm}.service`).toString()
+}
+
+function replaceWildcards(str, home, service) {
+    return str.replace(/\$CWD/g, home).replace(/\$NAME/g, service.name).replace(/\$FROM/g, service.from);
 }

@@ -81,6 +81,25 @@ app.post('/deploy-agent/post/update', (req, res) => {
     }
 })
 
+app.post('/deploy-agent/post/upgrade', (req, res) => {
+    let serviceList = services();
+    let name = req.body.name;
+    let target = serviceList.filter(e => e.name == name);
+    let output;
+    if (target.length <= 0) {
+        res.status(400).send("Service not found");
+    } else {
+        let homeDir = path.resolve(__dirname + "/service_home/" + target.name);
+        try {
+            output = execSync(target.upgrade.replace("$CWD", homeDir));
+        } catch (err) {
+            res.status(400).send(err);
+        }
+    }
+    res.status(200).send("OK - " + output);
+})
+
+
 app.post('/deploy-agent/post/deploy', (req, res) => {
     try {
         let input = req.body;

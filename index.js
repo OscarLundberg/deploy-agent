@@ -196,7 +196,9 @@ function makeService(service) {
     try {
         fs.mkdirSync(homeDir, { "recursive": true });
         fs.mkdirSync(declaration, { "recursive": true });
-    } catch { }
+    } catch(err) {
+
+     }
 
     let parsedCommand = replaceWildcards(service.cmd, homeDir, service);
 

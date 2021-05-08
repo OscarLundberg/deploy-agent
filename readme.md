@@ -7,6 +7,7 @@
 ### GET
 - [/deploy-agent/get/info](/deploy-agent/get/info) - **Information about the machine running this agent**
 - [/deploy-agent/get/status](/deploy-agent/get/status) - **Status of services running under this agent**
+- [/deploy-agent/get/list](/deploy-agent/get/list) - **Get a list of services running under this agent**
 - [/deploy-agent/get/help](/deploy-agent/get/help) - **Display this help page**
 - [/deploy-agent/get/online](/deploy-agent/get/online) - **Is agent running (Used by oscarlundberg/deploy network scanner)**
 ### POST

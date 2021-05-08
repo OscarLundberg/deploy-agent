@@ -28,8 +28,6 @@ function userAgent() {
 
 services = () => readToObject('services.json');
 
-
-
 app.get('/deploy-agent/get/online', (req, res) => {
     res.status(200).send("Online");
 })
@@ -39,7 +37,7 @@ app.get('/deploy-agent/get/info', (req, res) => {
 })
 
 app.get('/deploy-agent/get/status', (req, res) => {
-    res.status(200).send(getStatus());
+    res.status(200).send(JSON.stringify(getStatus()));
 })
 
 app.get('/deploy-agent/get/help', async (req, res) => {
@@ -93,7 +91,6 @@ app.post('/deploy-agent/post/upgrade', (req, res) => {
     res.status(200).send("OK - " + output);
 });
 
-
 app.post('/deploy-agent/post/deploy', (req, res) => {
     try {
         let input = req.body;
@@ -136,8 +133,6 @@ app.delete('/deploy-agent/delete/service', (req, res) => {
         res.status(400).send(result.error);
     }
 });
-
-
 
 app.listen(49494, () => {
     console.log("server listening on localhost:49494");
@@ -234,11 +229,9 @@ WantedBy=multi-user.target`
 }
 
 function removeService(nm) {
-
     let serviceList = services();
-
-
     let declaration = path.resolve(userAgent().serviceDir + "/" + nm + ".service");
+
     if (fs.existsSync(declaration)) {
         stopService(nm);
         try {
@@ -256,7 +249,6 @@ function removeService(nm) {
     return { success: false, error: "Service not found" };
 }
 
-
 function getStatus(nm = "__ALL__SERVICES__") {
     let serviceList = [];
     if (nm == "__ALL__SERVICES__") {
@@ -264,7 +256,7 @@ function getStatus(nm = "__ALL__SERVICES__") {
             serviceList += getStatus(service.name);
         }
     } else {
-        return execSync(`systemctl status ${nm}.service`).toString()
+        return { "statusText": execSync(`systemctl status ${nm}.service`).toString(), "config": service }
     }
     return services;
 }
@@ -276,7 +268,6 @@ function runService(nm) {
 function stopService(nm) {
     return execSync(`systemctl stop ${nm}.service`).toString()
 }
-
 
 function logs(nm) {
     return execSync(`journalctl -u ${nm}.service`).toString()

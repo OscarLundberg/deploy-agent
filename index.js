@@ -265,7 +265,7 @@ function getStatus(nm = "__ALL__SERVICES__") {
     let serviceList = [];
     if (nm == "__ALL__SERVICES__") {
         for (let service of services()) {
-            serviceList += { serviceText: getStatus(service.name), config: service }
+            serviceList.push({ serviceText: getStatus(service.name), config: service })
         }
     } else {
         return execSync(`systemctl status ${nm} | grep .`).toString();

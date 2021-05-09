@@ -41,7 +41,7 @@ app.get('/deploy-agent/get/list', (req, res) => {
 });
 
 app.get('/deploy-agent/get/status', (req, res) => {
-    res.status(200).send(JSON.stringify(getStatus()));
+    res.status(200).send(JSON.stringify(getStatus(), null, 4));
 })
 
 app.get('/deploy-agent/get/logs', (req, res) => {

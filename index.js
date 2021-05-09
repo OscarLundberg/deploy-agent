@@ -269,7 +269,13 @@ function getStatus(nm = "__ALL__SERVICES__") {
             serviceList.push({ statusText: status.text, config: service, status: status.list })
         }
     } else {
-        return { text: execSync(`systemctl status ${nm} | grep .`).toString(), list: execSync(`systemctl show ${nm} | grep .`).toString().split('\n') };
+        return {
+            text: execSync(`systemctl status ${nm} | grep .`).toString(), list: execSync(`systemctl show ${nm} | grep .`).toString().split('\n').reduce((map, obj) => {
+                let pair = obj.split("=")
+                map[pair[0]] = pair[1]
+                return map;
+            }, {})
+        };
     }
     return serviceList;
 }

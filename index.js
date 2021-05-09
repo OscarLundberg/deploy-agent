@@ -268,7 +268,7 @@ function getStatus(nm = "__ALL__SERVICES__") {
             serviceList += getStatus(service.name);
         }
     } else {
-        return { "statusText": execSync(`systemctl status ${nm}`).toString(), "config": service }
+        return { "statusText": execSync(`systemctl status ${nm} | grep .`).toString(), "config": service }
     }
     return services;
 }

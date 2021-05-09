@@ -44,6 +44,10 @@ app.get('/deploy-agent/get/status', (req, res) => {
     res.status(200).send(JSON.stringify(getStatus()));
 })
 
+app.get('/deploy-agent/get/logs', (req, res) => {
+    res.status(200).send(logs(req.query.name));
+})
+
 app.get('/deploy-agent/get/help', async (req, res) => {
     let content = fs.readFileSync('./readme.md').toString()
     res.send(`

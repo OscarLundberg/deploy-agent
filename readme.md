@@ -10,6 +10,7 @@
 - [/deploy-agent/get/list](/deploy-agent/get/list) - **Get a list of services running under this agent**
 - [/deploy-agent/get/help](/deploy-agent/get/help) - **Display this help page**
 - [/deploy-agent/get/online](/deploy-agent/get/online) - **Is agent running (Used by oscarlundberg/deploy network scanner)**
+- [/deploy-agent/get/logs?name=myName](/deploy-agent/get/logs) - **Get logs for service**
 ### POST
 - [/deploy-agent/post/deploy](/deploy-agent/post/deploy) - **Deploy a new service - [Structure](#structure)**
 - [/deploy-agent/post/update](/deploy-agent/post/update) - **Update an existing service - [Structure](#structure)**

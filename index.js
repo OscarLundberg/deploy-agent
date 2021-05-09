@@ -268,17 +268,17 @@ function getStatus(nm = "__ALL__SERVICES__") {
             serviceList += getStatus(service.name);
         }
     } else {
-        return { "statusText": execSync(`systemctl status ${nm}.service`).toString(), "config": service }
+        return { "statusText": execSync(`systemctl status ${nm}`).toString(), "config": service }
     }
     return services;
 }
 
 function runService(nm) {
-    return execSync(`systemctl start ${nm}.service`).toString()
+    return execSync(`sudo systemctl start ${nm}`).toString()
 }
 
 function stopService(nm) {
-    return execSync(`systemctl stop ${nm}.service`).toString()
+    return execSync(`sudo systemctl stop ${nm}`).toString()
 }
 
 function logs(nm) {

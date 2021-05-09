@@ -21,7 +21,7 @@ function userAgent() {
         "uptime": Math.floor((os.uptime() / 60) / 60) + " h",
         "serviceDir": (os.type() === "Darwin") ?
             path.resolve(__dirname + "/service_declarations") :
-            path.resolve("/etc/systemd/system"),
+            path.resolve("/etc/systemd/user"),
         ...os.userInfo()
     }
 }

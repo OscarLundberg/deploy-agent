@@ -109,12 +109,14 @@ app.post('/deploy-agent/post/deploy', (req, res) => {
             writeToFile('./services.json', list);
             res.status(200).send("OK");
         } else {
+            console.log("ERROR CODE " + validation.code + "\n" + validation.error);
             res.status(400).send("ERROR CODE " + validation.code + "\n" + validation.error);
         }
 
     } catch (err) {
         console.log(err);
-        res.status(400).send("Bad Request")
+
+        res.status(400).send("Bad Request " + err)
     }
 });
 
@@ -187,9 +189,9 @@ function validate(inp, services) {
     }
 
     if (services.some(e => sha1(e) == sha1(inp))) {
-        return { success: false, error: "Checksum match - This service is already deployed. Did you mean to request '/agent_deploy-reload'?", code: 2 }
+        return { success: false, error: "Checksum match - This service is already deployed. Did you mean to request '/deploy-agent/reload'?", code: 2 }
     } else if (services.some(e => e.name == inp.name)) {
-        return { success: false, error: "Service name taken. To update the service, use '/agent_deploy-update'", code: 3 }
+        return { success: false, error: "Service name taken. To update the service, use '/deploy-agent/update'", code: 3 }
     }
     return { success, error: "", code: 0 }
 }

@@ -202,9 +202,9 @@ function makeService(service) {
     try {
         fs.mkdirSync(homeDir, { "recursive": true });
         fs.mkdirSync(declaration, { "recursive": true });
-    } catch(err) {
+    } catch (err) {
 
-     }
+    }
 
     let parsedCommand = replaceWildcards(service.cmd, homeDir, service);
 
@@ -265,12 +265,12 @@ function getStatus(nm = "__ALL__SERVICES__") {
     let serviceList = [];
     if (nm == "__ALL__SERVICES__") {
         for (let service of services()) {
-            serviceList += getStatus(service.name);
+            serviceList += { serviceText: getStatus(service.name), config: service }
         }
     } else {
-        return { "statusText": execSync(`systemctl status ${nm} | grep .`).toString(), "config": service }
+        return execSync(`systemctl status ${nm} | grep .`).toString();
     }
-    return services;
+    return serviceList;
 }
 
 function runService(nm) {

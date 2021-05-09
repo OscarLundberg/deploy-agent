@@ -37,11 +37,11 @@ app.get('/deploy-agent/get/info', (req, res) => {
 })
 
 app.get('/deploy-agent/get/list', (req, res) => {
-    res.status(200).send(JSON.stringify(services(), null, 4));
+    res.status(200).json(services());
 });
 
 app.get('/deploy-agent/get/status', (req, res) => {
-    res.status(200).send(JSON.stringify(getStatus(), null, 4));
+    res.status(200).json(getStatus());
 })
 
 app.get('/deploy-agent/get/logs', (req, res) => {

@@ -63,7 +63,7 @@ Once installed you can consume the API directly or via the [/oscarlundberg/deplo
     "before": [""],                                              // Commands to run before deploying.    Default: ["git clone $FROM"] - $
     "upgrade": "",                                               // Command to run when upgrading. - $
     "runMode": "service",                                        // Run mode for the service.            Default: "service"
-    "restart": "always",                                          // Restart mode for the service.        Default: "restart"
+    "restart": "always",                                         // Restart mode for the service.        Default: "always"
     "to": "myself"                                               // Alias for current deploy-agent
 }
 ```

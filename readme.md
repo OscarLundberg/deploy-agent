@@ -20,6 +20,18 @@
 ### DELETE
 - [/deploy-agent/delete/service](/deploy-agent/delete/service) - **Delete the service (*Alpha*: The service declaration and home directory will be kept as a backup, but the service will be unlinked and moved) `{"name":""}`**
 
+
+#### Quick Start
+Paste into terminal to clone and install
+```
+if cd ~/deploy-agent; then
+    git pull;
+else
+    git clone https://github.com/OscarLundberg/deploy-agent.git ~/deploy-agent && sh ~/deploy-agent/setup.sh
+fi
+```
+
+
 #### Structure
 
 ```

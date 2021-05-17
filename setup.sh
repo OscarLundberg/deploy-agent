@@ -5,8 +5,8 @@ SDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )";
 cd $SDIR;
 
 npm install;
-echo "[Unit]
-Description=Deply and manage services via HTTP API
+sudo echo "[Unit]
+Description=Deploy and manage services via HTTP API
 Documentation=https://github.com/OscarLundberg/deploy-agent#readme
 After=network.target
 

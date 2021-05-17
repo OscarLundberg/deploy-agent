@@ -1,10 +1,11 @@
 #!/bin/bash
 CDIR=$PWD;
-SDIR="$(cd "$(dirname "$0")" && pwd)"
+SDIR="$(cd "$(dirname "$0")" && pwd)";
 cd $SDIR;
 
 npm install;
-sudo echo "[Unit]
+sudo -i;
+echo "[Unit]
 Description=Deploy and manage services via HTTP API
 Documentation=https://github.com/OscarLundberg/deploy-agent#readme
 After=network.target
@@ -18,5 +19,5 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target" >> "/lib/systemd/system/deploy-agent.service";
 cd $CDIR;
-sudo systemctl start deploy-agent
-
+systemctl start deploy-agent;
+exit;

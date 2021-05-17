@@ -1,7 +1,6 @@
 #!/bin/bash
 CDIR=$PWD;
-SDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )";
-# echo $SDIR
+SDIR="$(cd "$(dirname "$0")" && pwd)"
 cd $SDIR;
 
 npm install;

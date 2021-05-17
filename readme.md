@@ -26,8 +26,10 @@ Paste into terminal to clone and install
 ```
 if cd ~/deploy-agent; then
     git pull;
+    sh ~/deploy-agent/setup.sh
 else
-    git clone https://github.com/OscarLundberg/deploy-agent.git ~/deploy-agent && sh ~/deploy-agent/setup.sh
+    git clone https://github.com/OscarLundberg/deploy-agent.git ~/deploy-agent;
+    sh ~/deploy-agent/setup.sh
 fi
 ```
 

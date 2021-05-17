@@ -7,10 +7,14 @@
 > Autodetect build targets when deploying via the oscarlundberg/deploy package (Coming Soon)
 
 ## Quick Start
+### Install
 Paste into terminal to clone and install
-> This command starts deploy-agent as a systemd service
 
-```
+> This command will:
+> - Create or update the ~/deploy-agent repository
+> - install node modules
+> - Create and run deploy-agent as a service
+```sh
 if cd ~/deploy-agent; then
     git pull;
 else
@@ -18,6 +22,18 @@ else
 fi
 sudo sh ~/deploy-agent/setup.sh;
 ```
+
+To make sure that the service is up and running, paste and run in the terminal:
+
+```sh
+curl localhost:49494/deploy-agent/get/online
+# Should output: Online
+```
+
+
+### Usage
+
+Once installed you can consume the API directly or via the [/oscarlundberg/deploy](/oscarlundberg/deploy) package.
 
 ## API Reference
 

@@ -8,12 +8,8 @@
 
 ## Quick Start
 ### Install
-Paste into terminal to clone and install
+Paste this command into the terminal
 
-> This command will:
-> - Create or update the ~/deploy-agent repository
-> - install node modules
-> - Create and run deploy-agent as a service
 ```sh
 if cd ~/deploy-agent; then
     git pull;
@@ -23,13 +19,17 @@ fi
 sudo sh ~/deploy-agent/setup.sh;
 ```
 
-To make sure that the service is up and running, paste and run in the terminal:
+> This command will:
+> - Create or update the ~/deploy-agent repository
+> - install node modules
+> - Create and run deploy-agent as a service
 
+
+To make sure that the service is up and running, paste and run:
 ```sh
 curl localhost:49494/deploy-agent/get/online
 # Should output: Online
 ```
-
 
 ### Usage
 

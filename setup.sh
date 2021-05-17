@@ -5,6 +5,8 @@ cd $SDIR;
 
 npm install;
 sudo -i;
+exit;
+
 echo "[Unit]
 Description=Deploy and manage services via HTTP API
 Documentation=https://github.com/OscarLundberg/deploy-agent#readme
@@ -20,4 +22,3 @@ Restart=on-failure
 WantedBy=multi-user.target" >> "/lib/systemd/system/deploy-agent.service";
 cd $CDIR;
 systemctl start deploy-agent;
-exit;

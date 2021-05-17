@@ -8,6 +8,8 @@
 
 ## Quick Start
 Paste into terminal to clone and install
+> This command starts deploy-agent as a systemd service
+
 ```
 if cd ~/deploy-agent; then
     git pull;

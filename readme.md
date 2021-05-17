@@ -25,7 +25,7 @@
 
 
 2. To make sure that the service is up and running, paste and run:
-    ```
+    ```sh
     curl localhost:49494/deploy-agent/get/online
     # Should output: Online
     ```

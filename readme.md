@@ -1,8 +1,23 @@
 # Deploy Agent
 
+## Description
+
 > Deply and manage services via HTTP API
 
 > Autodetect build targets when deploying via the oscarlundberg/deploy package (Coming Soon)
+
+## Quick Start
+Paste into terminal to clone and install
+```
+if cd ~/deploy-agent; then
+    git pull;
+else
+    git clone https://github.com/OscarLundberg/deploy-agent.git ~/deploy-agent;
+fi
+sudo sh ~/deploy-agent/setup.sh;
+```
+
+## API Reference
 
 ### GET
 - [/deploy-agent/get/info](/deploy-agent/get/info) - **Information about the machine running this agent**
@@ -19,18 +34,6 @@
 - [/deploy-agent/post/upgrade](/deploy-agent/post/upgrade) - **Upgrade the service (Requires "upgrade" property to be specified either in service declaration or in request body) - `{"name":"", "upgrade?":""}`**
 ### DELETE
 - [/deploy-agent/delete/service](/deploy-agent/delete/service) - **Delete the service (*Alpha*: The service declaration and home directory will be kept as a backup, but the service will be unlinked and moved) `{"name":""}`**
-
-
-#### Quick Start
-Paste into terminal to clone and install
-```
-if cd ~/deploy-agent; then
-    git pull;
-else
-    git clone https://github.com/OscarLundberg/deploy-agent.git ~/deploy-agent;
-fi
-sudo sh ~/deploy-agent/setup.sh;
-```
 
 
 #### Structure

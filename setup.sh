@@ -4,8 +4,6 @@ SDIR="$(cd "$(dirname "$0")" && pwd)";
 cd $SDIR;
 
 npm install;
-sudo -i;
-exit;
 
 echo "[Unit]
 Description=Deploy and manage services via HTTP API

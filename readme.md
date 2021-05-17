@@ -32,7 +32,7 @@
 
 ### Usage
 
-Once installed you can consume the API directly or via the [/oscarlundberg/deploy](/oscarlundberg/deploy) package.
+Once installed you can consume the API directly or via the [/oscarlundberg/deploy](oscarlundberg/deploy) package.
 
 ## API Reference
 
